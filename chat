@@ -24,6 +24,15 @@ def limparTela():
     elif os.name == 'nt':
         os.system('cls')
 
+def obterNomePorIp(ip):
+   global contatos
+
+   nomeEncontrado = None
+   for contato in contatos:
+       if contato['ip'] == ip:
+           nomeEncontrado = contato['nome']
+           break
+   return nomeEncontrado   
 
 def obterContatoPorCampo(nomeCampo, valorCampo):
     global contatos
@@ -94,10 +103,14 @@ def enviar_mensagens():
         mensagem = input("Digite a mensagem a ser enviada: ")
 
         if mensagem == "/sair":
+
+            mensagem = '.sair ' + obterNomePorIp(host)
+            cliente_socket.sendto(mensagem.encode('utf-8'), (destino_ip, porta))
             print("Encerrando o programa...")
             print("Fechando portas de escuta:")
             thread_recebimento.join()
             break
+
         elif mensagem.startswith(".") and not '.contatos' in mensagem and not '.entrar' in mensagem:
             destinatario = obterContatoPorCampo(
                 'nome', mensagem.split()[0].replace('.', ''))
